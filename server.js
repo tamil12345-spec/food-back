@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors({
-  origin: [process.env.CLIENT_URL || 'http://localhost:3000'],
+  origin: [process.env.CLIENT_URL || 'https://splendorous-cat-9f9c5f.netlify.app'],
   credentials: true,
 }));
 
