@@ -15,6 +15,55 @@ const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+const jwt = require("jsonwebtoken");
+
+// ─────────────────────────────────────────────
+// In-memory users (replace with DB later)
+// ─────────────────────────────────────────────
+const users = [];
+
+// ─────────────────────────────────────────────
+// POST /api/auth/register
+// ─────────────────────────────────────────────
+app.post("/api/auth/register", (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password)
+    return res.status(400).json({ success: false, message: "All fields required" });
+
+  if (users.find(u => u.email === email))
+    return res.status(400).json({ success: false, message: "Email already registered" });
+
+  const user = { id: Date.now(), name, email, password, role: "user" };
+  users.push(user);
+
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || "secret123",
+    { expiresIn: "7d" }
+  );
+
+  res.json({ success: true, token, user: { id: user.id, name, email, role: user.role } });
+});
+
+// ─────────────────────────────────────────────
+// POST /api/auth/login
+// ─────────────────────────────────────────────
+app.post("/api/auth/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user)
+    return res.status(401).json({ success: false, message: "Invalid email or password" });
+
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || "secret123",
+    { expiresIn: "7d" }
+  );
+
+  res.json({ success: true, token, user: { id: user.id, name: user.name, email, role: user.role } });
+});
 
 // ─────────────────────────────────────────────
 // Mock Data (replace with DB queries later)
