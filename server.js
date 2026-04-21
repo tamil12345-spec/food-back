@@ -20,13 +20,12 @@ const razorpay = new Razorpay({
 // Mock Data (replace with DB queries later)
 // ─────────────────────────────────────────────
 const restaurants = [
-  { id: 1, name: "Taco Loco",       cuisine: "Mexican", rating: 4.5, image: "", deliveryTime: "30 min" },
-  { id: 2, name: "Burger Barn",     cuisine: "Burgers", rating: 4.2, image: "", deliveryTime: "25 min" },
-  { id: 3, name: "Sushi Station",   cuisine: "Sushi",   rating: 4.7, image: "", deliveryTime: "40 min" },
-  { id: 4, name: "Pizza Palace",    cuisine: "Pizza",   rating: 4.3, image: "", deliveryTime: "35 min" },
-  { id: 5, name: "Curry Kingdom",   cuisine: "Indian",  rating: 4.6, image: "", deliveryTime: "30 min" },
+  { id: 1, name: "Taco Loco",       cuisine: ["Mexican"],        rating: 4.5 },
+  { id: 2, name: "Burger Barn",     cuisine: ["Burgers"],        rating: 4.2 },
+  { id: 3, name: "Sushi Station",   cuisine: ["Sushi"],          rating: 4.7 },
+  { id: 4, name: "Pizza Palace",    cuisine: ["Pizza"],          rating: 4.3 },
+  { id: 5, name: "Curry Kingdom",   cuisine: ["Indian"],         rating: 4.6 },
 ];
-
 const menus = {
   1: [
     { id: 101, name: "Tacos",       price: 199, description: "3 classic beef tacos" },
@@ -62,7 +61,7 @@ const menus = {
 app.get("/api/restaurants", (req, res) => {
   const { cuisine } = req.query;
   const result = cuisine
-    ? restaurants.filter(r => r.cuisine.toLowerCase() === cuisine.toLowerCase())
+    ? restaurants.filter(r => r.cuisine.some(c => c.toLowerCase() === cuisine.toLowerCase()))
     : restaurants;
   res.json({ success: true, restaurants: result });
 });
