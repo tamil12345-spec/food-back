@@ -29,6 +29,8 @@ const seed = async () => {
       rating: 4.5,
       deliveryTime: '25-35 min',
       deliveryFee: 1.99,
+      minOrder: 8,
+      isOpen: true,
       menu: [
         { name: 'Classic Burger', description: 'Beef patty with lettuce, tomato, cheese', price: 8.99, category: 'Burgers', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400' },
         { name: 'Cheese Burger', description: 'Double cheese with special sauce', price: 10.99, category: 'Burgers', image: 'https://images.unsplash.com/photo-1550317138-10000687a72b?w=400' },
@@ -45,6 +47,8 @@ const seed = async () => {
       rating: 4.7,
       deliveryTime: '30-45 min',
       deliveryFee: 2.99,
+      minOrder: 12,
+      isOpen: true,
       menu: [
         { name: 'Margherita', description: 'Classic tomato and mozzarella', price: 12.99, category: 'Pizza', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400' },
         { name: 'Pepperoni', description: 'Loaded with pepperoni', price: 14.99, category: 'Pizza', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400' },
@@ -61,6 +65,8 @@ const seed = async () => {
       rating: 4.8,
       deliveryTime: '35-50 min',
       deliveryFee: 3.99,
+      minOrder: 15,
+      isOpen: true,
       menu: [
         { name: 'Salmon Roll', description: 'Fresh salmon with avocado', price: 13.99, category: 'Rolls', image: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=400' },
         { name: 'Tuna Nigiri', description: 'Fresh tuna over rice', price: 11.99, category: 'Nigiri', image: 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=400' },
