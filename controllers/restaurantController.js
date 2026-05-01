@@ -16,7 +16,10 @@ const getRestaurantById = (req, res) => {
   const restaurant = restaurants.find((r) => r._id === req.params.id);
   if (!restaurant)
     return res.status(404).json({ success: false, message: "Restaurant not found" });
-  res.json({ success: true, restaurant });
+
+  // ✅ Attach menu so RestaurantDetail.jsx can read restaurant.menu
+  const menu = menus[req.params.id] || [];
+  res.json({ success: true, restaurant: { ...restaurant, menu } });
 };
 
 // GET /api/restaurants/:id/menu
