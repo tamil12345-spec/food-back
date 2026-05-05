@@ -15,7 +15,9 @@ router.get("/", authMiddleware, async (req, res) => {
 
 // POST /cart/add  — body: { menuItemId, restaurantId, quantity? }
 router.post("/add", authMiddleware, async (req, res) => {
+  console.log("CART ADD BODY:", req.body);
   try {
+    
     const { menuItemId, restaurantId, quantity = 1 } = req.body;
     if (!menuItemId || !restaurantId)
       return res.status(400).json({ success: false, message: "menuItemId and restaurantId are required" });
