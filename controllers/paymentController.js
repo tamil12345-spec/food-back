@@ -11,7 +11,7 @@ const createRazorpayOrder = async (req, res) => {
     }
 
     const order = await razorpay.orders.create({
-      amount:          Math.round(amount * 100),            // ✅ safe rounding
+      amount:          Math.round(amount * 100),
       currency,
       receipt:         receipt || `receipt_${Date.now()}`,
       payment_capture: 1,
@@ -56,23 +56,21 @@ const handleWebhook = (req, res) => {
     const signature         = req.headers["x-razorpay-signature"];
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-      .update(req.body)                      // ✅ raw Buffer — correct
+      .update(req.body)
       .digest("hex");
 
     if (expectedSignature !== signature) {
       return res.status(400).json({ message: "Invalid webhook signature" });
     }
 
-    const event = JSON.parse(req.body.toString());  // ✅ Buffer → string → JSON
+    const event = JSON.parse(req.body.toString());
 
     switch (event.event) {
       case "payment.captured":
         console.log("✅ Payment captured:", event.payload.payment.entity);
-        // TODO: update order status to 'paid' in your DB
         break;
       case "payment.failed":
         console.log("❌ Payment failed:", event.payload.payment.entity);
-        // TODO: update order status to 'failed' in your DB
         break;
       default:
         console.log("Unhandled event:", event.event);
