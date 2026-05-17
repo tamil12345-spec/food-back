@@ -1,7 +1,13 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const { Restaurant } = require('./models/Restaurant');
 const User = require('./models/User');
+
+// ── Admin credentials ──────────────────────────────────────────────────────
+// Change these via environment variables before deploying to production.
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@foodapp.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@9876!';   // strong default
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -10,15 +16,16 @@ const seed = async () => {
   await Restaurant.deleteMany({});
   await User.deleteMany({ role: 'admin' });
 
-  // Create admin user
+  // ── Create admin user with a hashed password ──────────────────────────
+  const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
   await User.create({
-    name: 'Admin',
-    email: 'admin@foodapp.com',
-    password: 'admin123',
-    role: 'admin',
+    name:     'Super Admin',
+    email:    ADMIN_EMAIL,
+    password: hashedPassword,
+    role:     'admin',
   });
 
-  // Create restaurants with embedded menus
+  // ── Restaurants ───────────────────────────────────────────────────────
   await Restaurant.insertMany([
     {
       name: 'Burger Palace',
@@ -153,7 +160,7 @@ const seed = async () => {
       cuisine: ['Mexican'],
       address: '321 Elm St',
       rating: 4.5,
-      deliveryTime: '30 min',
+      deliveryTime: '25-35 min',   // fixed: was "30 min", must be "X-Y min" format
       deliveryFee: 1.99,
       minOrder: 10,
       isOpen: true,
@@ -219,7 +226,7 @@ const seed = async () => {
   ]);
 
   console.log('✅ Seed data inserted successfully');
-  console.log('👤 Admin login: admin@foodapp.com / admin123');
+  console.log(`👤 Admin login: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
   process.exit(0);
 };
 
