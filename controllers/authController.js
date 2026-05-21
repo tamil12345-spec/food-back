@@ -57,5 +57,15 @@ const getMe = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+const deleteAccount = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.user.id);
+    res.json({ success: true, message: 'Account deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
-module.exports = { register, login, getMe };
+module.exports = { register, login, getMe, deleteAccount };
+
+
