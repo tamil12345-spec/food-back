@@ -7,7 +7,7 @@ const User = require('./models/User');
 // ── Admin credentials ──────────────────────────────────────────────────────
 // Change these via environment variables before deploying to production.
 const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@foodapp.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@9876!';   // strong default
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@9876!';
 
 const seed = async () => {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -160,7 +160,7 @@ const seed = async () => {
       cuisine: ['Mexican'],
       address: '321 Elm St',
       rating: 4.5,
-      deliveryTime: '25-35 min',   // fixed: was "30 min", must be "X-Y min" format
+      deliveryTime: '25-35 min',
       deliveryFee: 1.99,
       minOrder: 10,
       isOpen: true,
