@@ -14,24 +14,32 @@ if (missing.length > 0) {
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// Restrict to known origins in production; open in development
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim())
+  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim()).filter(Boolean)
   : ["http://localhost:3000"];
 
-app.use(cors({
+console.log("[CORS] Allowed origins:", ALLOWED_ORIGINS);
+
+const corsOptions = {
   origin: (origin, cb) => {
-    // Allow server-to-server / curl requests (no origin) in non-production
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    if (!origin) return cb(null, true); // curl, health checks, server-to-server
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    console.warn(`[CORS] Blocked origin: "${origin}"`);
     cb(new Error(`CORS: origin "${origin}" not allowed`));
   },
-  credentials: true,
-}));
+  credentials:    true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Authorization"],
+  methods:        ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight for all routes
 
 // ── Body parsing ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: "50kb" })); // prevent oversized payloads
+app.use(express.json({ limit: "50kb" }));
 
-// ── Health check (Render, UptimeRobot, etc.) ──────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────────────
 app.get("/health", (req, res) =>
   res.json({ status: "ok", uptime: process.uptime(), env: process.env.NODE_ENV })
 );
@@ -64,20 +72,17 @@ app.use((err, req, res, next) => {
 
 // ── MongoDB + auto-seed ───────────────────────────────────────────────────────
 async function seedAdmin() {
-  const User   = require("./models/User");
-  const bcrypt = require("bcryptjs");
+  const User = require("./models/User");
 
   const adminExists = await User.findOne({ role: "admin" });
   if (!adminExists) {
-    // Password is hashed by User model's pre-save hook —
-    // pass plain text here; bcrypt.hash call is redundant and double-hashes.
     await User.create({
       name:     "Super Admin",
-      email:    "admin@foodapp.com",
-      password: "Admin@9876!",   // hashed once by pre-save hook
+      email:    process.env.ADMIN_EMAIL    || "admin@foodapp.com",
+      password: process.env.ADMIN_PASSWORD || "Admin@9876!", // hashed by pre-save hook
       role:     "admin",
     });
-    console.log("✅ Admin user seeded: admin@foodapp.com / Admin@9876!");
+    console.log(`✅ Admin seeded: ${process.env.ADMIN_EMAIL || "admin@foodapp.com"}`);
   }
 }
 
