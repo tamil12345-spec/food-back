@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────
-// In-memory stores — replace with MongoDB later
-// ─────────────────────────────────────────────
-const users  = [];
-const orders = [];
-
-module.exports = { users, orders };
+const User  = require('./models/User');
+const Order = require('./models/Order');
+await User.create(newUser);
+await Order.findById(id);
